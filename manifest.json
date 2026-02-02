@@ -1,0 +1,11 @@
+﻿{
+  "name": "алькулятор мебели",
+  "short_name": "ебель",
+  "description": "риложение для расчета стоимости кухни и шкафов",
+  "version": "1.0.0",
+  "orientation": "portrait",
+  "display": "standalone",
+  "theme_color": "#2688EB",
+  "background_color": "#FFFFFF",
+  "icons": []
+}

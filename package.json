@@ -1,0 +1,24 @@
+﻿{
+    "name":  "vk-furniture-calculator",
+    "private":  true,
+    "version":  "0.1.0",
+    "type":  "module",
+    "scripts":  {
+                    "dev":  "vite --host",
+                    "build":  "vite build",
+                    "preview":  "vite preview",
+                    "deploy":  "vk-miniapps-deploy"
+                },
+    "dependencies":  {
+                         "@vkontakte/icons":  "^3.37.0",
+                         "@vkontakte/vk-bridge":  "^2.15.11",
+                         "@vkontakte/vk-miniapps-deploy":  "^1.0.2",
+                         "@vkontakte/vkui":  "^7.11.2",
+                         "react":  "18.2.0",
+                         "react-dom":  "18.2.0"
+                     },
+    "devDependencies":  {
+                            "@vitejs/plugin-react":  "4.2.0",
+                            "vite":  "5.0.0"
+                        }
+}
