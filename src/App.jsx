@@ -15,11 +15,7 @@ import {
   Spinner,
   Text,
   FormItem,
-  Input,
-  Textarea,
-  Cell,
-  Caption,
-  Switch
+  Input
 } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 import bridge from '@vkontakte/vk-bridge';
