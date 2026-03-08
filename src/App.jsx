@@ -1,4 +1,4 @@
-iimport React, { useState, useEffect, useCallback, memo } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import {
   AppRoot,
   View,
