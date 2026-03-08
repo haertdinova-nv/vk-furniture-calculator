@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo } from 'react';
+iimport React, { useState, useEffect, useCallback, memo } from 'react';
 import {
   AppRoot,
   View,
@@ -15,18 +15,22 @@ import {
   Spinner,
   Text,
   FormItem,
-  Input
+  Input,
+  Textarea,
+  Cell,
+  Caption,
+  Switch
 } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 import bridge from '@vkontakte/vk-bridge';
 
-// Инициализация VK Bridge
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ VK Bridge
 bridge.send('VKWebAppInit');
 
-// ?? ВСТАВЬТЕ СЮДА ВАШ ТОКЕН СООБЩЕСТВА (из сообщения выше)
+// вљ пёЏ Р’РЎРўРђР’Р¬РўР• РЎР®Р”Рђ Р’РђРЁ РўРћРљР•Рќ РЎРћРћР‘Р©Р•РЎРўР’Рђ (РёР· СЃРѕРѕР±С‰РµСЃС‚РІР°, РѕС‚ РёРјРµРЅРё РєРѕС‚РѕСЂРѕРіРѕ Р±СѓРґСѓС‚ РїСЂРёС…РѕРґРёС‚СЊ СѓРІРµРґРѕРјР»РµРЅРёСЏ)
 const COMMUNITY_TOKEN = 'vk1.a.XplS0UWWUtdvHG0cSuTUXTz90Fe2EumAwn4kgNm3TwoaALyjSwT9F3A4SI-I6';
 
-// Конфигурация по умолчанию
+// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 const defaultConfig = {
   colors: {
     primary: '#2688EB',
@@ -34,16 +38,95 @@ const defaultConfig = {
     background: '#FFFFFF'
   },
   texts: {
-    appTitle: '??? Калькулятор мебели',
-    kitchenTitle: '??? Кухня',
-    wardrobeTitle: '?? Шкаф'
+    appTitle: 'рџ› пёЏ РљР°Р»СЊРєСѓР»СЏС‚РѕСЂ РјРµР±РµР»Рё',
+    kitchenTitle: 'рџЌЅпёЏ РљСѓС…РЅСЏ',
+    wardrobeTitle: 'рџ‘” РЁРєР°С„'
   },
   communityId: 188643426,
-  adminIds: '13439015,817256017', // ID администраторов
+  adminIds: '13439015,817256017', // ID Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРІ
   notificationsEnabled: true
 };
 
-// --- Компоненты для красивого выбора с иконками ---
+// --- РњРµРјРѕРёР·РёСЂРѕРІР°РЅРЅС‹Рµ РєРѕРјРїРѕРЅРµРЅС‚С‹ РґР»СЏ РїРѕР»РµР№ РІРІРѕРґР° ---
+const PhoneInput = memo(({ value, onChange }) => (
+  <FormItem top="РќРѕРјРµСЂ С‚РµР»РµС„РѕРЅР° (РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ)">
+    <Input
+      type="tel"
+      value={value}
+      onChange={onChange}
+      placeholder="+7 (999) 123-45-67"
+    />
+  </FormItem>
+));
+
+const CommentsInput = memo(({ value, onChange }) => (
+  <FormItem top="РљРѕРјРјРµРЅС‚Р°СЂРёРё">
+    <Textarea
+      value={value}
+      onChange={onChange}
+      placeholder="РћСЃРѕР±С‹Рµ РїРѕР¶РµР»Р°РЅРёСЏ, С†РІРµС‚, РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ СЌР»РµРјРµРЅС‚С‹..."
+      rows={3}
+    />
+  </FormItem>
+));
+
+const DimensionsInput = memo(({ dimensions, onLengthChange, onWidthChange, onHeightChange, onDontKnow }) => (
+  <Div>
+    <FormItem top="Р”Р»РёРЅР° (СЃРј)">
+      <Input
+        type="number"
+        value={dimensions.length}
+        onChange={onLengthChange}
+        placeholder="250"
+      />
+    </FormItem>
+    <FormItem top="РЁРёСЂРёРЅР° (СЃРј)">
+      <Input
+        type="number"
+        value={dimensions.width}
+        onChange={onWidthChange}
+        placeholder="150"
+      />
+    </FormItem>
+    <FormItem top="Р’С‹СЃРѕС‚Р° (СЃРј)">
+      <Input
+        type="number"
+        value={dimensions.height}
+        onChange={onHeightChange}
+        placeholder="220"
+      />
+    </FormItem>
+    <Button
+      size="l"
+      mode="outline"
+      style={{ width: '100%', marginTop: '20px' }}
+      onClick={onDontKnow}
+    >
+      рџ¤· РќРµ Р·РЅР°СЋ С‚РѕС‡РЅС‹С… СЂР°Р·РјРµСЂРѕРІ
+    </Button>
+  </Div>
+));
+
+const OptionsList = memo(({ options, onSelect }) => (
+  <Div>
+    {options.map((option, index) => (
+      <Cell
+        key={index}
+        onClick={() => onSelect(option.label)}
+        style={{
+          marginBottom: '10px',
+          borderRadius: '10px',
+          cursor: 'pointer',
+          backgroundColor: '#f5f5f5'
+        }}
+      >
+        {option.label}
+      </Cell>
+    ))}
+  </Div>
+));
+
+// --- РљР°СЂС‚РѕС‡РєРё РґР»СЏ РІС‹Р±РѕСЂР° СЃ РёРєРѕРЅРєР°РјРё ---
 const OptionCard = memo(({ label, icon, selected, onSelect, multi }) => {
   const handleClick = () => {
     if (multi) {
@@ -106,53 +189,6 @@ const SingleOptionGroup = memo(({ options, selectedValue, onSelect }) => {
   );
 });
 
-// --- Компонент ввода размеров ---
-const DimensionsInput = memo(({ dimensions, onLengthChange, onWidthChange, onHeightChange, onDontKnow }) => (
-  <Div>
-    <div style={{ marginBottom: '20px' }}>
-      <Text weight="medium" style={{ marginBottom: '10px' }}>Укажите размер кухни по стенам в сантиметрах</Text>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
-        <Text>Длина стороны А</Text>
-        <input
-          type="number"
-          value={dimensions.length}
-          onChange={onLengthChange}
-          placeholder="11"
-          style={{ width: '80px', padding: '8px', borderRadius: '8px', border: '1px solid #ccc' }}
-        />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
-        <Text>Длина стороны Б</Text>
-        <input
-          type="number"
-          value={dimensions.width}
-          onChange={onWidthChange}
-          placeholder="1"
-          style={{ width: '80px', padding: '8px', borderRadius: '8px', border: '1px solid #ccc' }}
-        />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
-        <Text>Длина стороны В</Text>
-        <input
-          type="number"
-          value={dimensions.height}
-          onChange={onHeightChange}
-          placeholder="1"
-          style={{ width: '80px', padding: '8px', borderRadius: '8px', border: '1px solid #ccc' }}
-        />
-      </div>
-    </div>
-    <Button
-      size="l"
-      mode="outline"
-      style={{ width: '100%' }}
-      onClick={onDontKnow}
-    >
-      Я не знаю размеров :(
-    </Button>
-  </Div>
-));
-
 function App() {
   const [activePanel, setActivePanel] = useState('home');
   const [step, setStep] = useState(0);
@@ -165,6 +201,8 @@ function App() {
 
   const [formData, setFormData] = useState({
     dimensions: { length: '', width: '', height: '' },
+    phone: '',
+    comments: '',
     kitchenForm: '',
     kitchenFacades: [],
     kitchenHandles: '',
@@ -172,13 +210,13 @@ function App() {
     kitchenColor: ''
   });
 
-  // Определяем тестовый режим (локально)
+  // РћРїСЂРµРґРµР»СЏРµРј С‚РµСЃС‚РѕРІС‹Р№ СЂРµР¶РёРј
   useEffect(() => {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     setIsTestingMode(isLocal);
   }, []);
 
-  // Загружаем конфиг из localStorage (если есть)
+  // Р—Р°РіСЂСѓР¶Р°РµРј РєРѕРЅС„РёРі РёР· localStorage
   useEffect(() => {
     const saved = localStorage.getItem('furnitureConfig');
     if (saved) {
@@ -188,7 +226,7 @@ function App() {
     }
   }, []);
 
-  // Получаем информацию о пользователе
+  // РџРѕР»СѓС‡Р°РµРј РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РїРѕР»СЊР·РѕРІР°С‚РµР»Рµ VK
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -199,6 +237,13 @@ function App() {
     fetchUserInfo();
   }, []);
 
+  // РџСЂРѕРІРµСЂРєР°, СЏРІР»СЏРµС‚СЃСЏ Р»Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРј
+  const isUserAdmin = useCallback(() => {
+    if (!userInfo) return false;
+    const adminIdsArray = config.adminIds.split(',').map(id => id.trim());
+    return adminIdsArray.includes(String(userInfo.id));
+  }, [userInfo, config.adminIds]);
+
   const showSnackbar = useCallback((text) => {
     setSnackbar(
       <Snackbar onClose={() => setSnackbar(null)} duration={3000}>
@@ -207,32 +252,26 @@ function App() {
     );
   }, []);
 
-  // --- Функция отправки сообщения через VK Bridge с токеном сообщества ---
+  // --- Р¤СѓРЅРєС†РёСЏ РѕС‚РїСЂР°РІРєРё СЃРѕРѕР±С‰РµРЅРёСЏ С‡РµСЂРµР· VK Bridge ---
   const sendVkMessage = useCallback(async (messageText) => {
-    // В тестовом режиме просто логируем
     if (isTestingMode) {
-      console.log('?? ТЕСТОВЫЙ РЕЖИМ: сообщение админам', messageText);
+      console.log('рџЏ  РўР•РЎРўРћР’Р«Р™ Р Р•Р–РРњ: СЃРѕРѕР±С‰РµРЅРёРµ Р°РґРјРёРЅР°Рј', messageText);
       return true;
     }
 
     try {
-      // Запрашиваем токен пользователя (нужен для вызова API, но можно и без него, если токен сообщества уже имеет права)
-      // На самом деле для вызова метода с токеном сообщества токен пользователя не обязателен, но VKWebAppCallAPIMethod требует access_token в params.
-      // Мы передадим COMMUNITY_TOKEN прямо в params.
-      
       const adminIds = config.adminIds.split(',').map(id => id.trim());
 
       for (const adminId of adminIds) {
         if (!adminId) continue;
 
-        // Вызываем метод messages.send через VK Bridge с токеном сообщества
         await bridge.send('VKWebAppCallAPIMethod', {
           method: 'messages.send',
           params: {
             user_id: adminId,
             message: messageText,
             random_id: Math.floor(Math.random() * 1000000),
-            access_token: COMMUNITY_TOKEN,  // используем токен сообщества
+            access_token: COMMUNITY_TOKEN,
             v: '5.199'
           }
         });
@@ -240,131 +279,38 @@ function App() {
 
       return true;
     } catch (error) {
-      console.error('Ошибка отправки сообщения через VK Bridge:', error);
-      showSnackbar('? Не удалось отправить уведомление администраторам.');
+      console.error('РћС€РёР±РєР° РѕС‚РїСЂР°РІРєРё СЃРѕРѕР±С‰РµРЅРёСЏ С‡РµСЂРµР· VK Bridge:', error);
+      showSnackbar('вќЊ РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РїСЂР°РІРёС‚СЊ СѓРІРµРґРѕРјР»РµРЅРёРµ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°Рј.');
       return false;
     }
   }, [isTestingMode, config.adminIds, showSnackbar]);
 
-  // --- Обработка отправки (последний шаг) ---
-  const handleSubmit = async () => {
-    setLoading(true);
-    try {
-      // Формируем текст сообщения
-      const userLink = userInfo ? `https://vk.com/id${userInfo.id}` : 'Неизвестный пользователь';
-      let messageText = `?? Новая заявка от ${userLink}\n\n`;
-      messageText += `Тип: Кухня\n\n`;
-      messageText += `Форма кухни: ${formData.kitchenForm || 'не указано'}\n`;
-      messageText += `Размеры: ${formData.dimensions?.length || '?'} x ${formData.dimensions?.width || '?'} x ${formData.dimensions?.height || '?'} см\n`;
-      messageText += `Фасады: ${Array.isArray(formData.kitchenFacades) ? formData.kitchenFacades.join(', ') : formData.kitchenFacades || 'не указано'}\n`;
-      messageText += `Ручки: ${formData.kitchenHandles || 'не указано'}\n`;
-      messageText += `Столешница: ${formData.kitchenCountertop || 'не указано'}\n`;
-      messageText += `Цвет: ${formData.kitchenColor || 'не указано'}\n`;
+  // --- РћР±СЂР°Р±РѕС‚С‡РёРєРё РІРІРѕРґР° (РѕР±С‘СЂРЅСѓС‚С‹ РІ useCallback РґР»СЏ СЃС‚Р°Р±РёР»СЊРЅРѕСЃС‚Рё) ---
+  const handleInputChange = useCallback((field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  }, []);
 
-      // Отправляем сообщение
-      const success = await sendVkMessage(messageText);
+  const handleDimensionsChange = useCallback((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      dimensions: { ...prev.dimensions, [field]: value }
+    }));
+  }, []);
 
-      if (success) {
-        showSnackbar('? Заявка отправлена! Менеджер свяжется с вами.');
-      }
+  const handlePhoneChange = useCallback((e) => {
+    handleInputChange('phone', e.target.value);
+  }, [handleInputChange]);
 
-      // Сохраняем локально для истории
-      const order = { type: 'kitchen', data: formData, user: userInfo, timestamp: new Date().toISOString() };
-      const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-      localStorage.setItem('orderHistory', JSON.stringify([order, ...history]));
+  const handleCommentsChange = useCallback((e) => {
+    handleInputChange('comments', e.target.value);
+  }, [handleInputChange]);
 
-      // Возвращаемся на главную
-      setActivePanel('home');
-      setStep(0);
-      setFormData({
-        dimensions: { length: '', width: '', height: '' },
-        kitchenForm: '',
-        kitchenFacades: [],
-        kitchenHandles: '',
-        kitchenCountertop: '',
-        kitchenColor: ''
-      });
-
-    } catch (error) {
-      showSnackbar('? Ошибка. Попробуйте позже.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // --- Шаги для кухни ---
-  const kitchenSteps = [
-    {
-      id: 'kitchenForm',
-      title: 'Какой формы будет ваша кухня?',
-      type: 'single',
-      options: [
-        { label: 'Прямая', icon: '??', value: 'straight' },
-        { label: 'Угловая', icon: '??', value: 'corner' },
-        { label: 'П-образная', icon: '??', value: 'ushaped' },
-        { label: 'Островная', icon: '???', value: 'island' }
-      ]
-    },
-    {
-      id: 'dimensions',
-      title: 'Укажите размеры кухни',
-      type: 'dimensions'
-    },
-    {
-      id: 'kitchenFacades',
-      title: 'Какие фасады вы хотите видеть на своей новой кухне?',
-      type: 'multi',
-      options: [
-        { label: 'Сплошные', icon: '??', value: 'solid' },
-        { label: 'С фрезеровкой', icon: '??', value: 'milled' },
-        { label: 'С фото-печатью', icon: '???', value: 'photo' },
-        { label: 'С росписью', icon: '??', value: 'painted' }
-      ]
-    },
-    {
-      id: 'kitchenHandles',
-      title: 'Какими кухонными ручками вы хотите пользоваться?',
-      type: 'single',
-      options: [
-        { label: 'Классические', icon: '??', value: 'classic' },
-        { label: 'Торцевые', icon: '??', value: 'end' },
-        { label: 'Интегрированные', icon: '??', value: 'integrated' },
-        { label: 'Открытие нажатием', icon: '??', value: 'push' }
-      ]
-    },
-    {
-      id: 'kitchenCountertop',
-      title: 'К какой столешнице вы присматриваетесь больше всего?',
-      type: 'single',
-      options: [
-        { label: 'Из ДСП', icon: '??', value: 'ldsp' },
-        { label: 'Из массива дерева', icon: '??', value: 'wood' },
-        { label: 'Из керамики', icon: '??', value: 'ceramic' },
-        { label: 'Из кварца', icon: '??', value: 'quartz' }
-      ]
-    },
-    {
-      id: 'kitchenColor',
-      title: 'В каком цвете вы хотите видеть новую кухню?',
-      type: 'single',
-      options: [
-        { label: 'В светлых тонах', icon: '?', value: 'light' },
-        { label: 'В тёмных тонах', icon: '?', value: 'dark' },
-        { label: 'В ярких тонах', icon: '??', value: 'bright' },
-        { label: 'В разных тонах', icon: '??', value: 'mixed' }
-      ]
-    }
-  ];
-
-  const currentSteps = kitchenSteps;
-
-  // Обработчики изменения данных
-  const handleSingleSelect = (field, label) => {
+  const handleSingleSelect = useCallback((field, label) => {
     setFormData(prev => ({ ...prev, [field]: label }));
     setTimeout(() => setStep(step + 1), 200);
-  };
+  }, [step]);
 
-  const handleMultiToggle = (field, label, isSelected) => {
+  const handleMultiToggle = useCallback((field, label, isSelected) => {
     setFormData(prev => {
       const current = prev[field] || [];
       if (isSelected) {
@@ -373,25 +319,141 @@ function App() {
         return { ...prev, [field]: current.filter(v => v !== label) };
       }
     });
-  };
+  }, []);
 
-  const handleDimensionsChange = (field, value) => {
+  const handleDontKnowDimensions = useCallback(() => {
     setFormData(prev => ({
       ...prev,
-      dimensions: { ...prev.dimensions, [field]: value }
-    }));
-  };
-
-  const handleDontKnowDimensions = () => {
-    setFormData(prev => ({
-      ...prev,
-      dimensions: { length: 'не знаю', width: 'не знаю', height: 'не знаю' }
+      dimensions: { length: 'РЅРµ Р·РЅР°СЋ', width: 'РЅРµ Р·РЅР°СЋ', height: 'РЅРµ Р·РЅР°СЋ' }
     }));
     setStep(step + 1);
-  };
+  }, [step]);
 
-  // Рендер содержимого шага
-  const renderStepContent = () => {
+  // --- РћР±СЂР°Р±РѕС‚РєР° РѕС‚РїСЂР°РІРєРё ---
+  const handleSubmit = useCallback(async () => {
+    setLoading(true);
+    try {
+      const userLink = userInfo ? `https://vk.com/id${userInfo.id}` : 'РќРµРёР·РІРµСЃС‚РЅС‹Р№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ';
+      let messageText = `рџ“Њ РќРѕРІР°СЏ Р·Р°СЏРІРєР° РѕС‚ ${userLink}\n\n`;
+      messageText += `РўРёРї: РљСѓС…РЅСЏ\n\n`;
+      messageText += `Р¤РѕСЂРјР° РєСѓС…РЅРё: ${formData.kitchenForm || 'РЅРµ СѓРєР°Р·Р°РЅРѕ'}\n`;
+      messageText += `Р Р°Р·РјРµСЂС‹: ${formData.dimensions?.length || '?'} x ${formData.dimensions?.width || '?'} x ${formData.dimensions?.height || '?'} СЃРј\n`;
+      messageText += `Р¤Р°СЃР°РґС‹: ${Array.isArray(formData.kitchenFacades) ? formData.kitchenFacades.join(', ') : formData.kitchenFacades || 'РЅРµ СѓРєР°Р·Р°РЅРѕ'}\n`;
+      messageText += `Р СѓС‡РєРё: ${formData.kitchenHandles || 'РЅРµ СѓРєР°Р·Р°РЅРѕ'}\n`;
+      messageText += `РЎС‚РѕР»РµС€РЅРёС†Р°: ${formData.kitchenCountertop || 'РЅРµ СѓРєР°Р·Р°РЅРѕ'}\n`;
+      messageText += `Р¦РІРµС‚: ${formData.kitchenColor || 'РЅРµ СѓРєР°Р·Р°РЅРѕ'}\n`;
+      if (formData.phone) {
+        messageText += `\nрџ“ћ РўРµР»РµС„РѕРЅ: ${formData.phone}\n`;
+      }
+      if (formData.comments) {
+        messageText += `\nрџ’¬ РљРѕРјРјРµРЅС‚Р°СЂРёРё: ${formData.comments}\n`;
+      }
+
+      const success = await sendVkMessage(messageText);
+
+      if (success) {
+        showSnackbar('вњ… Р”Р»СЏ СЂР°СЃС‡РµС‚Р° СЃС‚РѕРёРјРѕСЃС‚Рё РІСЃРµ РґР°РЅРЅС‹Рµ РїРµСЂРµРґР°РЅС‹ РЅР°С€РµРјСѓ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂСѓ Р’РёРєС‚РѕСЂРёРё. РћРЅР° СЃРєРѕСЂРѕ СЃРІСЏР¶РµС‚СЃСЏ СЃ Р’Р°РјРё!');
+      }
+
+      // РЎРѕС…СЂР°РЅСЏРµРј Р»РѕРєР°Р»СЊРЅРѕ
+      const order = { type: 'kitchen', data: formData, user: userInfo, timestamp: new Date().toISOString() };
+      const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+      localStorage.setItem('orderHistory', JSON.stringify([order, ...history]));
+
+      // Р’РѕР·РІСЂР°С‰Р°РµРјСЃСЏ РЅР° РіР»Р°РІРЅСѓСЋ
+      setActivePanel('home');
+      setStep(0);
+      setFormData({
+        dimensions: { length: '', width: '', height: '' },
+        phone: '',
+        comments: '',
+        kitchenForm: '',
+        kitchenFacades: [],
+        kitchenHandles: '',
+        kitchenCountertop: '',
+        kitchenColor: ''
+      });
+
+    } catch (error) {
+      showSnackbar('вќЊ РћС€РёР±РєР°. РџРѕРїСЂРѕР±СѓР№С‚Рµ РїРѕР·Р¶Рµ.');
+    } finally {
+      setLoading(false);
+    }
+  }, [formData, userInfo, sendVkMessage, showSnackbar]);
+
+  // --- РЁР°РіРё РґР»СЏ РєСѓС…РЅРё ---
+  const kitchenSteps = [
+    {
+      id: 'kitchenForm',
+      title: 'РљР°РєРѕР№ С„РѕСЂРјС‹ Р±СѓРґРµС‚ РІР°С€Р° РєСѓС…РЅСЏ?',
+      type: 'single',
+      options: [
+        { label: 'РџСЂСЏРјР°СЏ', icon: 'в¬†пёЏ', value: 'straight' },
+        { label: 'РЈРіР»РѕРІР°СЏ', icon: 'в†ЄпёЏ', value: 'corner' },
+        { label: 'Рџ-РѕР±СЂР°Р·РЅР°СЏ', icon: 'рџ”„', value: 'ushaped' },
+        { label: 'РћСЃС‚СЂРѕРІРЅР°СЏ', icon: 'рџЏќпёЏ', value: 'island' }
+      ]
+    },
+    {
+      id: 'dimensions',
+      title: 'РЈРєР°Р¶РёС‚Рµ СЂР°Р·РјРµСЂС‹ РєСѓС…РЅРё',
+      type: 'dimensions'
+    },
+    {
+      id: 'kitchenFacades',
+      title: 'РљР°РєРёРµ С„Р°СЃР°РґС‹ РІС‹ С…РѕС‚РёС‚Рµ РІРёРґРµС‚СЊ РЅР° СЃРІРѕРµР№ РЅРѕРІРѕР№ РєСѓС…РЅРµ?',
+      type: 'multi',
+      options: [
+        { label: 'РЎРїР»РѕС€РЅС‹Рµ', icon: 'рџџ«', value: 'solid' },
+        { label: 'РЎ С„СЂРµР·РµСЂРѕРІРєРѕР№', icon: 'рџ”І', value: 'milled' },
+        { label: 'РЎ С„РѕС‚Рѕ-РїРµС‡Р°С‚СЊСЋ', icon: 'рџ–јпёЏ', value: 'photo' },
+        { label: 'РЎ СЂРѕСЃРїРёСЃСЊСЋ', icon: 'рџЋЁ', value: 'painted' }
+      ]
+    },
+    {
+      id: 'kitchenHandles',
+      title: 'РљР°РєРёРјРё РєСѓС…РѕРЅРЅС‹РјРё СЂСѓС‡РєР°РјРё РІС‹ С…РѕС‚РёС‚Рµ РїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ?',
+      type: 'single',
+      options: [
+        { label: 'РљР»Р°СЃСЃРёС‡РµСЃРєРёРµ', icon: 'рџ”©', value: 'classic' },
+        { label: 'РўРѕСЂС†РµРІС‹Рµ', icon: 'рџ”љ', value: 'end' },
+        { label: 'РРЅС‚РµРіСЂРёСЂРѕРІР°РЅРЅС‹Рµ', icon: 'рџ”—', value: 'integrated' },
+        { label: 'РћС‚РєСЂС‹С‚РёРµ РЅР°Р¶Р°С‚РёРµРј', icon: 'рџ‘†', value: 'push' }
+      ]
+    },
+    {
+      id: 'kitchenCountertop',
+      title: 'Рљ РєР°РєРѕР№ СЃС‚РѕР»РµС€РЅРёС†Рµ РІС‹ РїСЂРёСЃРјР°С‚СЂРёРІР°РµС‚РµСЃСЊ Р±РѕР»СЊС€Рµ РІСЃРµРіРѕ?',
+      type: 'single',
+      options: [
+        { label: 'РР· Р”РЎРџ', icon: 'рџЄµ', value: 'ldsp' },
+        { label: 'РР· РјР°СЃСЃРёРІР° РґРµСЂРµРІР°', icon: 'рџЊі', value: 'wood' },
+        { label: 'РР· РєРµСЂР°РјРёРєРё', icon: 'рџЌ¶', value: 'ceramic' },
+        { label: 'РР· РєРІР°СЂС†Р°', icon: 'рџ’Ћ', value: 'quartz' }
+      ]
+    },
+    {
+      id: 'kitchenColor',
+      title: 'Р’ РєР°РєРѕРј С†РІРµС‚Рµ РІС‹ С…РѕС‚РёС‚Рµ РІРёРґРµС‚СЊ РЅРѕРІСѓСЋ РєСѓС…РЅСЋ?',
+      type: 'single',
+      options: [
+        { label: 'Р’ СЃРІРµС‚Р»С‹С… С‚РѕРЅР°С…', icon: 'в¬њ', value: 'light' },
+        { label: 'Р’ С‚С‘РјРЅС‹С… С‚РѕРЅР°С…', icon: 'в¬›', value: 'dark' },
+        { label: 'Р’ СЏСЂРєРёС… С‚РѕРЅР°С…', icon: 'рџџҐ', value: 'bright' },
+        { label: 'Р’ СЂР°Р·РЅС‹С… С‚РѕРЅР°С…', icon: 'рџЊ€', value: 'mixed' }
+      ]
+    },
+    {
+      id: 'contact',
+      title: 'РљРѕРЅС‚Р°РєС‚РЅС‹Рµ РґР°РЅРЅС‹Рµ',
+      type: 'contact'
+    }
+  ];
+
+  const currentSteps = kitchenSteps;
+
+  // --- Р РµРЅРґРµСЂ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ С€Р°РіР° ---
+  const renderStepContent = useCallback(() => {
     if (step >= currentSteps.length) return null;
     const currentStep = currentSteps[step];
 
@@ -422,43 +484,65 @@ function App() {
             onDontKnow={handleDontKnowDimensions}
           />
         );
+      case 'contact':
+        return (
+          <Div>
+            <PhoneInput value={formData.phone} onChange={handlePhoneChange} />
+            <CommentsInput value={formData.comments} onChange={handleCommentsChange} />
+          </Div>
+        );
       default:
         return null;
     }
-  };
+  }, [step, formData, handleSingleSelect, handleMultiToggle, handleDimensionsChange, handleDontKnowDimensions, handlePhoneChange, handleCommentsChange]);
 
-  // Главная панель
-  const HomePanel = () => (
+  // --- Р“Р»Р°РІРЅР°СЏ РїР°РЅРµР»СЊ ---
+  const HomePanel = useCallback(() => (
     <View id="home" activePanel="home">
       <Panel id="home">
         <PanelHeader>{config.texts.appTitle}</PanelHeader>
         <Group>
           <Div style={{ textAlign: 'center', margin: '30px 0' }}>
-            <Title level="1">Выберите тип мебели:</Title>
+            <Title
+              level="1"
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                if (isUserAdmin()) {
+                  setActivePanel('admin');
+                  showSnackbar('рџ”“ РђРґРјРёРЅ-РїР°РЅРµР»СЊ РѕС‚РєСЂС‹С‚Р°');
+                } else {
+                  showSnackbar('Р”РѕСЃС‚СѓРї С‚РѕР»СЊРєРѕ РґР»СЏ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРІ');
+                }
+              }}
+            >
+              Р’С‹Р±РµСЂРёС‚Рµ С‚РёРї РјРµР±РµР»Рё:
+            </Title>
           </Div>
           <Div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             <Card
               onClick={() => { setFurnitureType('kitchen'); setActivePanel('calculator'); setStep(0); }}
               style={{ padding: '30px', textAlign: 'center', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', cursor: 'pointer' }}
             >
-              <div style={{ fontSize: '48px' }}>???</div>
-              <Title level="2" style={{ color: 'white' }}>Кухня</Title>
+              <div style={{ fontSize: '48px', marginBottom: '15px' }}>рџЌЅпёЏ</div>
+              <Title level="2" style={{ color: 'white' }}>РљСѓС…РЅСЏ</Title>
+              <p style={{ marginTop: '10px', opacity: 0.9 }}>РљСѓС…РѕРЅРЅС‹Рµ РіР°СЂРЅРёС‚СѓСЂС‹ Р»СЋР±РѕР№ СЃР»РѕР¶РЅРѕСЃС‚Рё</p>
             </Card>
             <Card
               onClick={() => { setFurnitureType('wardrobe'); setActivePanel('calculator'); setStep(0); }}
               style={{ padding: '30px', textAlign: 'center', background: 'linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)', color: 'white', cursor: 'pointer' }}
             >
-              <div style={{ fontSize: '48px' }}>??</div>
-              <Title level="2" style={{ color: 'white' }}>Шкаф</Title>
+              <div style={{ fontSize: '48px', marginBottom: '15px' }}>рџ‘”</div>
+              <Title level="2" style={{ color: 'white' }}>РЁРєР°С„</Title>
+              <p style={{ marginTop: '10px', opacity: 0.9 }}>РЁРєР°С„С‹-РєСѓРїРµ, РіР°СЂРґРµСЂРѕР±РЅС‹Рµ СЃРёСЃС‚РµРјС‹</p>
             </Card>
           </Div>
         </Group>
       </Panel>
     </View>
-  );
+  ), [config.texts.appTitle, isUserAdmin, showSnackbar]);
 
-  // Панель калькулятора
-  const CalculatorPanel = () => {
+  // --- РџР°РЅРµР»СЊ РєР°Р»СЊРєСѓР»СЏС‚РѕСЂР° ---
+  const CalculatorPanel = useCallback(() => {
     const isLastStep = step === currentSteps.length - 1;
     const canProceed = () => {
       const currentStep = currentSteps[step];
@@ -468,8 +552,8 @@ function App() {
       if (currentStep.type === 'single') {
         return !!formData[currentStep.id];
       }
-      if (currentStep.type === 'dimensions') {
-        return true;
+      if (currentStep.type === 'dimensions' || currentStep.type === 'contact') {
+        return true; // РјРѕР¶РЅРѕ РїСЂРѕРїСѓСЃС‚РёС‚СЊ
       }
       return true;
     };
@@ -480,20 +564,20 @@ function App() {
           <PanelHeader
             left={<PanelHeaderBack onClick={() => step > 0 ? setStep(step - 1) : setActivePanel('home')} />}
           >
-            {furnitureType === 'kitchen' ? 'Кухня' : 'Шкаф'}
+            {furnitureType === 'kitchen' ? 'РљСѓС…РЅСЏ' : 'РЁРєР°С„'}
           </PanelHeader>
           <Group>
             {loading ? (
               <Div style={{ textAlign: 'center', padding: '50px 0' }}>
                 <Spinner size="large" />
-                <Text style={{ marginTop: '20px' }}>Отправляем...</Text>
+                <Text style={{ marginTop: '20px' }}>РћС‚РїСЂР°РІР»СЏРµРј...</Text>
               </Div>
             ) : (
               <>
                 <Div>
                   <Progress value={((step + 1) / currentSteps.length) * 100} style={{ height: '10px', borderRadius: '5px' }} />
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', color: '#6D7885' }}>
-                    <span>Вопрос {step + 1} из {currentSteps.length}</span>
+                    <span>Р’РѕРїСЂРѕСЃ {step + 1} РёР· {currentSteps.length}</span>
                     <span>{Math.round(((step + 1) / currentSteps.length) * 100)}%</span>
                   </div>
                 </Div>
@@ -501,7 +585,7 @@ function App() {
                 {renderStepContent()}
                 <Div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
                   {step > 0 && (
-                    <Button size="l" mode="outline" onClick={() => setStep(step - 1)}>? Назад</Button>
+                    <Button size="l" mode="outline" onClick={() => setStep(step - 1)}>в†ђ РќР°Р·Р°Рґ</Button>
                   )}
                   {!isLastStep ? (
                     <Button
@@ -511,16 +595,20 @@ function App() {
                       onClick={() => setStep(step + 1)}
                       style={{ marginLeft: 'auto' }}
                     >
-                      Следующий вопрос ?
+                      РЎР»РµРґСѓСЋС‰РёР№ РІРѕРїСЂРѕСЃ в†’
                     </Button>
                   ) : (
                     <Button
                       size="l"
                       mode="primary"
                       onClick={handleSubmit}
-                      style={{ marginLeft: 'auto', backgroundColor: config.colors.primary, color: 'white !important' }}
+                      style={{
+                        marginLeft: 'auto',
+                        backgroundColor: config.colors.primary,
+                        color: 'white !important'
+                      }}
                     >
-                      Рассчитать стоимость
+                      Р Р°СЃСЃС‡РёС‚Р°С‚СЊ СЃС‚РѕРёРјРѕСЃС‚СЊ
                     </Button>
                   )}
                 </Div>
@@ -530,12 +618,131 @@ function App() {
         </Panel>
       </View>
     );
-  };
+  }, [step, currentSteps, furnitureType, loading, formData, config.colors.primary, handleSubmit, renderStepContent]);
+
+  // --- РђРґРјРёРЅ-РїР°РЅРµР»СЊ (РґРѕСЃС‚СѓРїРЅР° С‚РѕР»СЊРєРѕ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°Рј) ---
+  const AdminPanel = useCallback(() => {
+    const [localConfig, setLocalConfig] = useState(config);
+    const [activeTab, setActiveTab] = useState('general');
+
+    const handleSave = () => {
+      setConfig(localConfig);
+      localStorage.setItem('furnitureConfig', JSON.stringify(localConfig));
+      showSnackbar('вњ… РќР°СЃС‚СЂРѕР№РєРё СЃРѕС…СЂР°РЅРµРЅС‹!');
+    };
+
+    const handleReset = () => {
+      setLocalConfig(defaultConfig);
+    };
+
+    const exportData = () => {
+      const data = {
+        config: localConfig,
+        lastOrder: localStorage.getItem('lastOrder'),
+        orderHistory: localStorage.getItem('orderHistory')
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'furniture-calculator-backup.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    return (
+      <View id="admin" activePanel="admin">
+        <Panel id="admin">
+          <PanelHeader left={<PanelHeaderBack onClick={() => setActivePanel('home')} />}>
+            вљ™пёЏ РђРґРјРёРЅ-РїР°РЅРµР»СЊ
+          </PanelHeader>
+          <Group>
+            <Div>
+              <Title level="2" style={{ marginBottom: '20px' }}>РќР°СЃС‚СЂРѕР№РєРё РєР°Р»СЊРєСѓР»СЏС‚РѕСЂР°</Title>
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid #e1e3e6', paddingBottom: '10px' }}>
+                <Button size="m" mode={activeTab === 'general' ? 'primary' : 'tertiary'} onClick={() => setActiveTab('general')}>РћСЃРЅРѕРІРЅС‹Рµ</Button>
+                <Button size="m" mode={activeTab === 'colors' ? 'primary' : 'tertiary'} onClick={() => setActiveTab('colors')}>Р¦РІРµС‚Р°</Button>
+                <Button size="m" mode={activeTab === 'data' ? 'primary' : 'tertiary'} onClick={() => setActiveTab('data')}>Р”Р°РЅРЅС‹Рµ</Button>
+              </div>
+
+              {activeTab === 'general' && (
+                <>
+                  <FormItem top="РќР°Р·РІР°РЅРёРµ РїСЂРёР»РѕР¶РµРЅРёСЏ">
+                    <Input value={localConfig.texts.appTitle} onChange={e => setLocalConfig({ ...localConfig, texts: { ...localConfig.texts, appTitle: e.target.value } })} />
+                  </FormItem>
+                  <FormItem top="РќР°Р·РІР°РЅРёРµ РґР»СЏ РєСѓС…РЅРё">
+                    <Input value={localConfig.texts.kitchenTitle} onChange={e => setLocalConfig({ ...localConfig, texts: { ...localConfig.texts, kitchenTitle: e.target.value } })} />
+                  </FormItem>
+                  <FormItem top="РќР°Р·РІР°РЅРёРµ РґР»СЏ С€РєР°С„Р°">
+                    <Input value={localConfig.texts.wardrobeTitle} onChange={e => setLocalConfig({ ...localConfig, texts: { ...localConfig.texts, wardrobeTitle: e.target.value } })} />
+                  </FormItem>
+                  <FormItem top="ID СЃРѕРѕР±С‰РµСЃС‚РІР° VK">
+                    <Input type="number" value={localConfig.communityId} onChange={e => setLocalConfig({ ...localConfig, communityId: parseInt(e.target.value) || 0 })} placeholder="188643426" />
+                  </FormItem>
+                  <FormItem top="ID Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂРѕРІ (С‡РµСЂРµР· Р·Р°РїСЏС‚СѓСЋ)">
+                    <Input value={localConfig.adminIds} onChange={e => setLocalConfig({ ...localConfig, adminIds: e.target.value })} placeholder="13439015, 817256017" />
+                  </FormItem>
+                  <Cell after={<Switch checked={localConfig.notificationsEnabled} onChange={(e) => setLocalConfig({ ...localConfig, notificationsEnabled: e.target.checked })} />}>
+                    РЈРІРµРґРѕРјР»РµРЅРёСЏ РІ Р’Рљ
+                  </Cell>
+                </>
+              )}
+
+              {activeTab === 'colors' && (
+                <>
+                  <FormItem top="РћСЃРЅРѕРІРЅРѕР№ С†РІРµС‚ (РєРЅРѕРїРєРё)">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Input type="color" value={localConfig.colors.primary} onChange={e => setLocalConfig({ ...localConfig, colors: { ...localConfig.colors, primary: e.target.value } })} style={{ width: '60px', height: '40px', padding: 0 }} />
+                      <Text>{localConfig.colors.primary}</Text>
+                    </div>
+                  </FormItem>
+                  <FormItem top="Р’С‚РѕСЂРёС‡РЅС‹Р№ С†РІРµС‚">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Input type="color" value={localConfig.colors.secondary} onChange={e => setLocalConfig({ ...localConfig, colors: { ...localConfig.colors, secondary: e.target.value } })} style={{ width: '60px', height: '40px', padding: 0 }} />
+                      <Text>{localConfig.colors.secondary}</Text>
+                    </div>
+                  </FormItem>
+                  <FormItem top="Р¦РІРµС‚ С„РѕРЅР°">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Input type="color" value={localConfig.colors.background} onChange={e => setLocalConfig({ ...localConfig, colors: { ...localConfig.colors, background: e.target.value } })} style={{ width: '60px', height: '40px', padding: 0 }} />
+                      <Text>{localConfig.colors.background}</Text>
+                    </div>
+                  </FormItem>
+                </>
+              )}
+
+              {activeTab === 'data' && (
+                <>
+                  <div style={{ padding: '15px', background: '#f5f5f5', borderRadius: '10px', marginBottom: '20px' }}>
+                    <Title level="3">рџ“Љ РЎС‚Р°С‚РёСЃС‚РёРєР°</Title>
+                    <Text>Р’СЃРµРіРѕ Р·Р°СЏРІРѕРє: {JSON.parse(localStorage.getItem('orderHistory') || '[]').length}</Text>
+                    <Text>РџРѕСЃР»РµРґРЅСЏСЏ Р·Р°СЏРІРєР°: {localStorage.getItem('lastOrder') ? 'РµСЃС‚СЊ' : 'РЅРµС‚'}</Text>
+                    <Text>Р РµР¶РёРј: {isTestingMode ? 'Р›РѕРєР°Р»СЊРЅС‹Р№ С‚РµСЃС‚' : 'РџСЂРѕРґР°РєС€РµРЅ'}</Text>
+                  </div>
+                  <Div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <Button size="m" mode="outline" onClick={exportData}>рџ“Ґ Р­РєСЃРїРѕСЂС‚ РґР°РЅРЅС‹С…</Button>
+                    <Button size="m" mode="tertiary" onClick={() => { localStorage.removeItem('orderHistory'); localStorage.removeItem('lastOrder'); showSnackbar('рџ—‘пёЏ Р”Р°РЅРЅС‹Рµ РѕС‡РёС‰РµРЅС‹'); }}>РћС‡РёСЃС‚РёС‚СЊ РёСЃС‚РѕСЂРёСЋ Р·Р°СЏРІРѕРє</Button>
+                    <Button size="m" mode="tertiary" onClick={() => { localStorage.removeItem('furnitureConfig'); setLocalConfig(defaultConfig); showSnackbar('вљ™пёЏ РќР°СЃС‚СЂРѕР№РєРё СЃР±СЂРѕС€РµРЅС‹'); }}>РЎР±СЂРѕСЃРёС‚СЊ РЅР°СЃС‚СЂРѕР№РєРё</Button>
+                  </Div>
+                </>
+              )}
+
+              <Div style={{ display: 'flex', gap: '10px', marginTop: '30px', borderTop: '1px solid #e1e3e6', paddingTop: '20px' }}>
+                <Button size="l" mode="primary" style={{ flex: 1 }} onClick={handleSave}>рџ’ѕ РЎРѕС…СЂР°РЅРёС‚СЊ</Button>
+                <Button size="l" mode="outline" style={{ flex: 1 }} onClick={handleReset}>рџ”„ РЎР±СЂРѕСЃРёС‚СЊ</Button>
+              </Div>
+            </Div>
+          </Group>
+        </Panel>
+      </View>
+    );
+  }, [config, isTestingMode, showSnackbar]);
 
   return (
     <AppRoot style={{ backgroundColor: config.colors.background }}>
       {activePanel === 'home' && <HomePanel />}
       {activePanel === 'calculator' && <CalculatorPanel />}
+      {activePanel === 'admin' && <AdminPanel />}
       {snackbar}
     </AppRoot>
   );
